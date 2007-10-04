@@ -1,0 +1,40 @@
+.TH vcap 1 "October 5, 2007" "VERSION 0.1" "USER COMMANDS"
+.SH NAME
+vcap \- ethernet package capture visualisation
+.SH SYNOPSIS
+.B vcap
+[\-i dev] [\-l] [\-p] [\-h]
+.Sh DESCRIPTION
+vcap captures packages and displays protocol and port statistics
+using a sunburst algorithm. 
+This makes it easy  to see fast what's is going on in your network.
+.PP
+Usually this program is run under root.
+.SH OPTIONS
+.TP
+\-i dev
+the ethernet device to capture from
+.TP
+\-l
+list all available devices and exit
+.TP
+\-p 
+enable promiscuous mode.
+In promiscuous mode the program captures all packages that
+are visible to the device. This might contain packages that are 
+not destined for the device (e.g. if your network card is connected 
+to a hub and not a switch).
+.TP
+\-h
+display the usage
+.SH EXAMPLES
+.TP
+Capture from your network card and receive every package the device can see.
+.B vcap
+\-p \-i eth0
+.SH EXIT STATUS
+vcap returns zero if the capture device can be initialized, otherwise a non zero status is returned.
+.SH AUTHOR
+David Soria Parra (sn_ (at) gmx.net)
+.SH SEE ALSO
+ethereal(1) pcap(3)
