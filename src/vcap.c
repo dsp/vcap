@@ -162,10 +162,10 @@ usage (void)
   printf ("%s-%s by dsp\n", PACKAGE_NAME, PACKAGE_VERSION);
   printf ("licensed under the terms of the 3-clause BSD License\n\n");
   printf ("Usage: vcap [-i <if>] [-l] [-p] [-h]\n");
-  printf ("  -i <if>  interface to use\n");
-  printf ("  -l       list available interfaces and exit\n");
-  printf ("  -p       enable promiscuous mode\n");
-  printf ("  -h       show this help\n");
+  printf ("  -i dev  interface to use\n");
+  printf ("  -l      list available interfaces and exit\n");
+  printf ("  -p      enable promiscuous mode\n");
+  printf ("  -h      show this help\n");
   printf ("\n");
   printf ("using libpcap from http://www.tcpdump.org\n");
 }
