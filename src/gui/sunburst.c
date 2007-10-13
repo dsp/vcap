@@ -9,7 +9,7 @@
 static GList * list;
 
 static double
-vcap_draw_sunburst_element (cairo_t * cr, const struct vcap_data_entry * e, unsigned int m_radius, double arc_start)
+vcap_sunburst_draw_element (cairo_t * cr, const struct vcap_data_entry * e, unsigned int m_radius, double arc_start)
 {
   unsigned int i;
   double arc_end, radius, nrsum, c;
@@ -28,7 +28,7 @@ vcap_draw_sunburst_element (cairo_t * cr, const struct vcap_data_entry * e, unsi
 	  nrsum = arc_start;
 	  for (i = 0; i < e->ecount; i++) 
 		{
-		  nrsum = vcap_draw_sunburst_element(cr, e->entries[i], m_radius, nrsum);
+		  nrsum = vcap_sunburst_draw_element(cr, e->entries[i], m_radius, nrsum);
 		}
 	}
 
@@ -45,9 +45,9 @@ vcap_draw_sunburst_element (cairo_t * cr, const struct vcap_data_entry * e, unsi
   cairo_set_line_width (cr, 0.001);
   cairo_stroke (cr);
 
-  if (e->ident) {
+/*  if (e->ident) {
 	cairo_text_extents (cr, e->ident, &extends);
-	  
+
 	cairo_set_source_rgb(cr, 1.0, 1.0, 1.0);
 
 	cairo_move_to (cr, 0, 0);
@@ -56,14 +56,14 @@ vcap_draw_sunburst_element (cairo_t * cr, const struct vcap_data_entry * e, unsi
 	cairo_show_text(cr, e->ident);
 	cairo_stroke (cr); 
 
-  }
+  } */
 
   return arc_end;
 }
 
 
 void
-vcap_draw_sunburst (cairo_t * cr)
+vcap_sunburst_draw (cairo_t * cr)
 {
   unsigned int m_radius;
 
@@ -78,12 +78,11 @@ vcap_draw_sunburst (cairo_t * cr)
 	  cairo_move_to(cr, -1, -0.9);
 	  cairo_show_text(cr, "No packages captures yet");
 	  cairo_stroke (cr);
-
 	}
   else 
 	{
 	  m_radius = ((vcap_data_entry_t*)g_list_nth_data(list, 0))->level + 1;
 
-	  vcap_draw_sunburst_element(cr, vcap_data_root(NULL), m_radius, 0);
+	  vcap_sunburst_draw_element(cr, vcap_data_root(NULL), m_radius, 0);
 	}
 }

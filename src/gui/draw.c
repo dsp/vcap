@@ -43,12 +43,12 @@ static gboolean
 vcap_gui_expose (GtkWidget *widget, GdkEventExpose *event __attribute__((unused)))
 {
   cairo_t * cr;
-  cr =  gdk_cairo_create(widget->window);
+  cr = gdk_cairo_create(widget->window);
 
   cairo_scale(cr, widget->allocation.width / 2, widget->allocation.height /2);
   cairo_translate(cr, 1, 1);
 
-  vcap_draw_sunburst(cr);
+  vcap_sunburst_draw(cr);
 
   cairo_destroy(cr);
   
