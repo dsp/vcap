@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <pthread.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -102,6 +104,11 @@ vcap_gui_process (int *argc, char ***argv)
   gtk_widget_set_size_request (area, 200, 200);
 
   gtk_widget_show_all (window);
+
+#ifdef DEBUG
+  pthread_t dworker;
+  pthread_create(&dworker, NULL, vcap_gui_bgdisplayer, NULL);
+#endif /* DEBUG */
 
   /* 
    * prepare our cairo context and the drawer that will draw

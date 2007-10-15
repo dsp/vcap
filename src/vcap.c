@@ -221,6 +221,10 @@ main (int argc, char *argv[])
   printf ("promiscuous mode %s\n",
 		  (cmd_config.promsc == 0) ? "disabled" : "enabled");
 
+#ifdef DEBUG
+  printf ("debug build");
+#endif
+
   /* initialize our main data mutex */
   pthread_mutex_init (&vcap_data_mutex, NULL);
 
