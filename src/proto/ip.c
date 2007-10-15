@@ -5,6 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <sys/socket.h>
 #include <netinet/if_ether.h>	/* ethernet header */
@@ -17,7 +18,7 @@
 #include "vcap.h"
 #include "proto/vcap_proto.h"
 
-static struct vcap_data_entry *ip_node, *tcp_node, *udp_node, *icmp_node;
+static struct vcap_data_entry *ip_node, *tcp_node, *udp_node, *icmp_node, *igmp_node, *sctp_node;
 
 static void
 vcap_packet_udp (const u_char * packet __attribute__((unused)))
@@ -47,7 +48,7 @@ vcap_packet_tcp (const u_char * packet)
     (struct tcphdr *) (packet + sizeof (struct ether_header) +
 		       sizeof (struct ip));
 
-  if (hdr->dest <= 65535) 
+  if (hdr->dest <= 65535 && hdr->dest > 0)
 	{
 	  if ((db = getservbyport (hdr->dest, "tcp")) != NULL)
 		{
@@ -55,11 +56,23 @@ vcap_packet_tcp (const u_char * packet)
 		}
 	  else
 		{
-		  sprintf(&prtchr, "%d", ntohs(hdr->dest));	 
-		  e = vcap_data_create (&prtchr, tcp_node);
+		  sprintf(prtchr, "%d", ntohs(hdr->dest));
+		  e = vcap_data_create (prtchr, tcp_node);
 		}
 	  VCAP_DATA_INC(e);
 	}
+}
+
+static void
+vcap_packet_igmp (const u_char * packet __attribute__((unused)))
+{
+  VCAP_DATA_CREATE (igmp_node, "igmp", "ip") VCAP_DATA_INC (igmp_node);
+}
+
+static void
+vcap_packet_sctp (const u_char * packet __attribute__((unused)))
+{
+  VCAP_DATA_CREATE (sctp_node, "sctp", "ip") VCAP_DATA_INC (sctp_node);
 }
 
 void
@@ -76,15 +89,21 @@ vcap_packet_ip (const u_char * packet)
   switch (hdr->ip_p)
     {
     case IPPROTO_TCP:
-      vcap_packet_tcp (packet);
-      break;
+	  vcap_packet_tcp (packet);
+	  break;
     case IPPROTO_UDP:
-      vcap_packet_udp (packet);
-      break;
+	  vcap_packet_udp (packet);
+	  break;
     case IPPROTO_ICMP:
-      vcap_packet_icmp (packet);
-      break;
+	  vcap_packet_icmp (packet);
+	  break;
+	case IPPROTO_IGMP:
+	  vcap_packet_igmp (packet);
+	  break;
+	case IPPROTO_SCTP:
+	  vcap_packet_sctp (packet);
+	  break;
     default:
-      perror ("Unknown ip protocol\n");
+	  perror ("Unknown ip protocol\n");
     }
 }
