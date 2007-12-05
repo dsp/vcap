@@ -36,10 +36,19 @@ if test "$WITH_DEBUG" = "yes" ; then
    CFLAGS="-g -Wall -W -D_REENTRANT -D__NO_MATH_INLINES -fsigned-char"
 fi
 
+######
+# pcap
+######
+AC_CHECK_HEADER(pcap.h,[enable_pcap=yes],[enable_pcap=no])
+AC_CHECK_LIB([pcap],[pcap_open_live],enable_pcap="yes", enable_pcap="no")
+AC_DEFINE([HAVE_PCAP], [1], [Define to 1 if you have packet capture library])
+
+LIB_PCAP="-lpcap"
 DEPS_LIBS="$DEPS_LIBS -lpcap -pthread"
 DEPS_CFLAGS="$DEPS_CFLAGS -Isrc/"
 
 # Checks for library functions.
+AC_SUBST([LIB_PCAP])
 AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
