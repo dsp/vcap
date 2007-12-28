@@ -3,7 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+/* sys defs */
+#include <sys/cdefs.h>
+#include <sys/types.h>
 #include <sys/socket.h>
+
+/* arpa defines */
+#include <netinet/in.h>
+#include <netinet/in_systm.h>
 #include <netinet/if_ether.h>
 #include <arpa/inet.h>
 

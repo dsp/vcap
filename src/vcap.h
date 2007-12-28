@@ -3,6 +3,7 @@
 
 #define IDENT_MAX 25
 
+#include <pthread.h>
 #include <glib.h>
 
 // #define VCAP_DATA_CALLBACK(f) void (*f)(const struct vcap_data_entry* entry, void* userp)

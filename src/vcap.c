@@ -6,14 +6,25 @@
 #include <string.h>
 #include <getopt.h>
 
+/* libpcap */
 #include <pcap.h>
+
+/* sys defs */
+#include <sys/cdefs.h>
+#include <sys/types.h>
 #include <sys/socket.h>
+
+/* network stuff */
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <netinet/if_ether.h>	/* ethernet header */
-#include <netinet/ip.h>		/* ip header */
-#include <netinet/tcp.h>	/* tcp stuff */
-#include <pthread.h>		/* threading */
+#include <netinet/in_systm.h>
+#include <netinet/ip.h>
+#include <net/if.h>
+
+#include <netinet/ip.h>		   /* ip header */
+#include <netinet/if_ether.h>  /* ethernet header */
+// #include <netinet/tcp.h>	   /* tcp stuff */
+#include <pthread.h>		   /* threading */
 
 #include "vcap.h"
 #include "proto/vcap_proto.h"	/* ip analysis including tcp,udp */
@@ -104,7 +115,7 @@ vcap_capture_worker (void *param __attribute__((unused)))
   struct ether_header *ethdr;
 
   desc =
-    pcap_open_live (cmd_config.dev, BUFSIZ, cmd_config.promsc, -1, errbuff);
+    pcap_open_live (cmd_config.dev, BUFSIZ, cmd_config.promsc, 0, errbuff);
 
   if (desc == NULL)
     {
@@ -222,7 +233,7 @@ main (int argc, char *argv[])
 		  (cmd_config.promsc == 0) ? "disabled" : "enabled");
 
 #ifdef DEBUG
-  printf ("debug build");
+  printf ("debug build\n");
 #endif
 
   /* initialize our main data mutex */

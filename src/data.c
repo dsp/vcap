@@ -59,7 +59,7 @@ vcap_data_create (const char *ident, struct vcap_data_entry *parent)
   new = (struct vcap_data_entry *) malloc (sizeof (struct vcap_data_entry));
   memset (new, 0, sizeof (struct vcap_data_entry));
 
-  new->ident  = strndup (ident, IDENT_MAX);
+  new->ident  = strdup (ident);
   new->amount = 0;
   new->parent = (parent == NULL) ? &root : parent;
   new->level  = vcap_level (new);

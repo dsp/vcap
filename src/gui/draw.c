@@ -130,10 +130,12 @@ vcap_foreach_print(struct vcap_data_entry * res, void * userp __attribute__((unu
 void *
 vcap_gui_bgdisplayer (void *param  __attribute__((unused)))
 {
-  while (1)
+	printf ("Start background print\n");
+	while (1)
     {
       sleep (1);
 	  vcap_data_foreach(NULL, vcap_foreach_print, NULL);
+	  printf("\n");
     }
 
   pthread_exit (NULL);

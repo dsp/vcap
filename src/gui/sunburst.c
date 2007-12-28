@@ -73,7 +73,7 @@ vcap_sunburst_draw (cairo_t * cr)
   
   list = vcap_data_raw_list();
 
-  if (g_list_length(list) == 1) 
+  if (g_list_length(list) <= 1)
 	{
 	  cairo_move_to(cr, -1, -0.9);
 	  cairo_show_text(cr, "No packages captures yet");

@@ -6,13 +6,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
+/* sys defs */
+#include <sys/cdefs.h>
+#include <sys/types.h>
 #include <sys/socket.h>
-#include <netinet/if_ether.h>	/* ethernet header */
-#include <netinet/ip.h>		/* ip header */
-#include <netinet/tcp.h>	/* tcp header */
-#include <netinet/udp.h>	/* udp header */
+
+/* network stuff */
 #include <arpa/inet.h>
+#include <netinet/in.h>
+#include <netinet/in_systm.h>
+#include <netinet/ip.h>
+#include <net/if.h>
+
+/* protocol headers */
+#include <netinet/if_ether.h> /* ethernet header */
+#include <netinet/tcp.h>	  /* tcp header */
+#include <netinet/udp.h>	  /* udp header */
+
 #include <netdb.h>
 
 #include "vcap.h"
@@ -38,7 +50,6 @@ vcap_packet_tcp (const u_char * packet)
   struct vcap_data_entry * e;
   const struct tcphdr *hdr;
 
-  /* buffer overflow warning */
   char prtchr[5];
   struct servent * db = NULL;
 
@@ -48,15 +59,15 @@ vcap_packet_tcp (const u_char * packet)
     (struct tcphdr *) (packet + sizeof (struct ether_header) +
 		       sizeof (struct ip));
 
-  if (hdr->dest <= 65535 && hdr->dest > 0)
+  if (hdr->th_dport <= 65535 && hdr->th_dport > 0)
 	{
-	  if ((db = getservbyport (hdr->dest, "tcp")) != NULL)
+	  if ((db = getservbyport (hdr->th_dport, "tcp")) != NULL)
 		{
-		  e = vcap_data_create (strndup(db->s_name, IDENT_MAX), tcp_node);
+		  e = vcap_data_create (strdup(db->s_name), tcp_node);
 		}
 	  else
 		{
-		  sprintf(prtchr, "%d", ntohs(hdr->dest));
+		  sprintf(prtchr, "%d", ntohs(hdr->th_dport));
 		  e = vcap_data_create (prtchr, tcp_node);
 		}
 	  VCAP_DATA_INC(e);

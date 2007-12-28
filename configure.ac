@@ -5,7 +5,7 @@ AC_CONFIG_HEADER([src/config.h])
 
 AM_INIT_AUTOMAKE
 
-AC_DEFINE([_GNU_SOURCE], [], [We use glibc stuff])
+AC_DEFINE([_GNU_SOURCE], [1], [We use glibc stuff])
 
 AC_DISABLE_STATIC
 
@@ -29,7 +29,7 @@ AC_FUNC_MALLOC
 AC_MSG_CHECKING(if you want to enable debugging)
 AC_ARG_ENABLE(debug,
    [  --enable-debug           specify you are building with debugging on],
-   WITH_DEBUG=yes ; AC_DEFINE([DEBUG], [], [Debugging]) , WITH_DEBUG=no)
+   WITH_DEBUG=yes ; AC_DEFINE([DEBUG], [1], [Debugging]) , WITH_DEBUG=no)
 AC_MSG_RESULT($WITH_DEBUG)
 
 if test "$WITH_DEBUG" = "yes" ; then
