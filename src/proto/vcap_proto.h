@@ -3,5 +3,6 @@
 
 void vcap_packet_arp (const u_char *);
 void vcap_packet_ip (const u_char *);
+void vcap_packet_ipv6(const u_char *);
 
 #endif /* __VCAP_PROTO_H_ */
