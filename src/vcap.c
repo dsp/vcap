@@ -1,3 +1,14 @@
+/*
+ * Copyright (c) 2007 segv
+ *
+ * Licensed under the terms of the MIT License
+ * See the LICENSE file
+ * or http://www.opensource.org/licenses/mit-license.php
+ *
+ * TODO:
+ *    - write a clean sigterm, siguser catcher to call pcap_breakloop()
+ */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -5,6 +16,7 @@
 #include <errno.h>
 #include <string.h>
 #include <getopt.h>
+#include <unistd.h>
 
 /* libpcap */
 #include <pcap.h>
@@ -20,10 +32,10 @@
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
 #include <net/if.h>
-
 #include <netinet/ip.h>		   /* ip header */
 #include <netinet/if_ether.h>  /* ethernet header */
 // #include <netinet/tcp.h>	   /* tcp stuff */
+
 #include <pthread.h>		   /* threading */
 
 #include "vcap.h"
@@ -47,7 +59,6 @@ static struct config_attr
 "any", 0, 0, 1};
 
 static struct vcap_data_entry *ether_node;
-
 
 static int
 vcap_listdevs (void)
@@ -105,23 +116,57 @@ vcap_finddev (const char *requested)
   return NULL;
 }
 
+static void
+vcap_capture_handler (u_char *user __attribute__((unused)), const struct pcap_pkthdr *h __attribute__((unused)), const u_char *sp)
+{
+  struct ether_header *ethdr;
+
+  if (sp == NULL)
+	{
+	  fprintf (stderr, "Error receiving packages\n");
+	  return;
+	}
+
+  VCAP_DATA_INC (ether_node);
+
+  ethdr = (struct ether_header *) sp;
+  switch (ntohs (ethdr->ether_type))
+	{
+	case ETHERTYPE_IP:
+	  vcap_packet_ip (sp);
+	  break;
+	case ETHERTYPE_ARP:
+	  vcap_packet_arp (sp);
+	  break;
+	default:
+	  break;
+	}
+}
+
 void *
 vcap_capture_worker (void *param __attribute__((unused)))
 {
   pcap_t *desc;
-  const u_char *packet;
-
-  struct pcap_pkthdr hdr;
-  struct ether_header *ethdr;
+  bpf_u_int32 localnet, netmask;
 
   desc =
-    pcap_open_live (cmd_config.dev, BUFSIZ, cmd_config.promsc, 0, errbuff);
+    pcap_open_live (cmd_config.dev, IP_MAXPACKET, cmd_config.promsc, 1000, errbuff);
 
   if (desc == NULL)
     {
       perror (errbuff);
-      pthread_exit (NULL);
+	  exit(1);
     }
+
+  /* XXX: Make direction as an option */
+  pcap_setdirection (desc, PCAP_D_INOUT);
+
+  if (pcap_lookupnet(cmd_config.dev, &localnet, &netmask, errbuff) < 0)
+	{
+	  localnet = 0;
+	  netmask  = 0;
+	  perror("Lookup Net failed\n");
+	}
 
   /* add ether proto to tree */
   if (ether_node == NULL)
@@ -135,34 +180,7 @@ vcap_capture_worker (void *param __attribute__((unused)))
       pthread_exit (NULL);
     }
 
-  printf ("capturing\n");
-  while (1)
-    {
-      packet = pcap_next (desc, &hdr);
-
-      if (packet == NULL)
-		{
-		  perror ("Error receiving packages");
-		  pthread_exit (NULL);
-		}
-
-      VCAP_DATA_INC (ether_node);
-
-      /* start analyzing package */
-      ethdr = (struct ether_header *) packet;
-      switch (ntohs (ethdr->ether_type))
-		{
-		case ETHERTYPE_IP:
-		  vcap_packet_ip (packet);
-		  break;
-		case ETHERTYPE_ARP:
-		  /* perror("ARP handling not implemented"); */
-		  vcap_packet_arp (packet);
-		  break;
-		default:
-		  break;
-		}
-    }
+  pcap_loop (desc, -1, vcap_capture_handler, NULL);
 
   pthread_exit (NULL);
 }
@@ -178,7 +196,7 @@ usage (void)
   printf ("  -p      enable promiscuous mode\n");
   printf ("  -h      show this help\n");
   printf ("\n");
-  printf ("using libpcap from http://www.tcpdump.org\n");
+  printf ("using libpcap version %s from http://www.tcpdump.org\n", pcap_lib_version());
 }
 
 int
@@ -251,4 +269,6 @@ main (int argc, char *argv[])
 
   pthread_mutex_destroy (&vcap_data_mutex);
   pthread_exit (NULL);
+
+  return 0;
 }
