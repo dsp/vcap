@@ -5,6 +5,6 @@
 
 void vcap_gui_process (int *, char ***);
 void *vcap_gui_bgdisplayer (void *);
-void vcap_draw_sunburst(cairo_t *);
+void vcap_sunburst_draw(cairo_t *);
 
 #endif /* __VCAP_GUI_H__ */

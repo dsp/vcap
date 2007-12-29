@@ -35,7 +35,7 @@ vcap_gui_delete_event (GtkWidget * widget __attribute__((unused)),
 static void
 vcap_gui_destroy (GtkWidget * widget __attribute__((unused)), gpointer data)
 {
-  pthread_cancel((pthread_t*) data); /* cancel worker thread */
+  pthread_cancel(*((pthread_t*) data)); /* cancel worker thread */
 
   gtk_main_quit ();
   exit (EXIT_SUCCESS);		/* terminate all threads hard */
@@ -124,14 +124,27 @@ vcap_gui_process (int *argc, char ***argv)
 static void
 vcap_foreach_print(struct vcap_data_entry * res, void * userp __attribute__((unused)))
 {
-  printf ("%s\t%li packages in level %d\n", res->ident, res->amount, res->level);
+  unsigned int i;
+  double percent;
+
+  for (i = 0; i < res->level; i++)
+	{
+	  printf(" ");
+	}
+
+  percent = 1.0;
+  if (res->parent) {
+	percent = (res->amount / (float)res->parent->amount);
+  }
+
+  printf ("%s\t%5li packages in level %d %0.2f\n", res->ident, res->amount, res->level, percent);
 }
 
 void *
 vcap_gui_bgdisplayer (void *param  __attribute__((unused)))
 {
-	printf ("Start background print\n");
-	while (1)
+  printf ("Start background print\n");
+  while (1)
     {
       sleep (1);
 	  vcap_data_foreach(NULL, vcap_foreach_print, NULL);
