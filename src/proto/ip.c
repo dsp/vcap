@@ -3,6 +3,8 @@
  */
 #include "config.h"
 
+#define __USE_BSD
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -22,6 +24,8 @@
 
 /* protocol headers */
 #include <netinet/if_ether.h> /* ethernet header */
+
+#define __FAVOR_BSD
 #include <netinet/tcp.h>	  /* tcp header */
 #include <netinet/udp.h>	  /* udp header */
 
