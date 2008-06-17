@@ -138,9 +138,9 @@ vcap_capture_handler (u_char *user __attribute__((unused)), const struct pcap_pk
 	case ETHERTYPE_ARP:
 	  vcap_packet_arp (sp);
 	  break;
-	case ETHERTYPE_IPV6:
+	  /*	case ETHERTYPE_IPV6:
 	  vcap_packet_ipv6 (sp);
-	  break;
+	  break;*/
 	default:
 #ifdef DEBUG
 		printf("Unknown package: %#x\n", ntohs(ethdr->ether_type));
