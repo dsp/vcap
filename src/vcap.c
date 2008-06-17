@@ -214,47 +214,47 @@ main (int argc, char *argv[])
   while ((opt = getopt (argc, argv, "i:lphq")) != -1)
     {
       switch (opt)
-		{
-		case 'q':
-		  cmd_config.quiet = 1;
-		  break;
-		case 'i':
-		  /* find dev */
-		  if (vcap_finddev (optarg) == NULL)
-			{
-			  fprintf (stderr, "Cannot find interface %s\n", optarg);
-			  usage ();
-			  exit (EXIT_FAILURE);
-			}
-		  else
-			{
-			  cmd_config.dev = optarg;
-			}
-		  break;
-		case 'l':
-		  if (vcap_listdevs () == -1)
-			{
-			  exit (EXIT_FAILURE);
-			}
-		  else
-			{
-			  exit (EXIT_SUCCESS);
-			}
-		  break;
-		case 'p':
-		  /* enable promiscuous mode */
-		  cmd_config.promsc = 1;
-		  break;
-		case 'h':
-		  usage ();
-		  exit (EXIT_SUCCESS);
-		  break;
-		}
+	{
+	case 'q':
+	  cmd_config.quiet = 1;
+	  break;
+	case 'i':
+	  /* find dev */
+	  if (vcap_finddev (optarg) == NULL)
+	    {
+	      fprintf (stderr, "Cannot find interface %s\n", optarg);
+	      usage ();
+	      exit (EXIT_FAILURE);
+	    }
+	  else
+	    {
+	      cmd_config.dev = optarg;
+	    }
+	  break;
+	case 'l':
+	  if (vcap_listdevs () == -1)
+	    {
+	      exit (EXIT_FAILURE);
+	    }
+	  else
+	    {
+	      exit (EXIT_SUCCESS);
+	    }
+	  break;
+	case 'p':
+	  /* enable promiscuous mode */
+	  cmd_config.promsc = 1;
+	  break;
+	case 'h':
+	  usage ();
+	  exit (EXIT_SUCCESS);
+	  break;
+	}
     }
 
   printf ("using interface %s\n", cmd_config.dev);
   printf ("promiscuous mode %s\n",
-		  (cmd_config.promsc == 0) ? "disabled" : "enabled");
+	  (cmd_config.promsc == 0) ? "disabled" : "enabled");
 
 #ifdef DEBUG
   printf ("debug build\n");
@@ -267,9 +267,9 @@ main (int argc, char *argv[])
   pthread_create (&worker[0], NULL, vcap_capture_worker, NULL);
 
   if (cmd_config.quiet == 1) 
-	{
-	  pthread_create (&worker[1], NULL, vcap_gui_bgdisplayer, NULL); 
-	}
+    {
+      pthread_create (&worker[1], NULL, vcap_gui_bgdisplayer, NULL); 
+    }
 
   vcap_gui_process (&argc, &argv);
 
